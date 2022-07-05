@@ -17,7 +17,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 	implementation 'org.apache.commons:commons-lang3:3.0'
+	implementation 'com.google.guava:guava:11.0.2'
+
+	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+	implementation 'io.springfox:springfox-swagger2:2.9.2'
 }
 
 tasks.named('test') {
