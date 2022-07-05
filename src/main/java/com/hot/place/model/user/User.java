@@ -5,9 +5,11 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.time.LocalDateTime.now;
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
@@ -81,16 +83,16 @@ public class User {
         return password;
     }
 
-    public String getProfileImageUrl() {
-        return profileImageUrl;
+    public Optional<String> getProfileImageUrl() {
+        return ofNullable(profileImageUrl);
     }
 
     public int getLoginCount() {
         return loginCount;
     }
 
-    public LocalDateTime getLastLoginAt() {
-        return lastLoginAt;
+    public Optional<LocalDateTime> getLastLoginAt() {
+        return ofNullable(lastLoginAt);
     }
 
     public LocalDateTime getCreateAt() {
@@ -186,7 +188,7 @@ public class User {
             this.createAt = createAt;
             return this;
         }
-        
+
         public User Build() {
             return new User(seq, email, name, password, profileImageUrl, loginCount, lastLoginAt, createAt);
         }
