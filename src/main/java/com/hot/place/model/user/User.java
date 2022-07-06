@@ -189,7 +189,7 @@ public class User {
             return this;
         }
 
-        public User Build() {
+        public User build() {
             return new User(seq, email, name, password, profileImageUrl, loginCount, lastLoginAt, createAt);
         }
     }

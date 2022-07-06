@@ -18,7 +18,7 @@ public class ApiResult<T> {
         this.error = error;
     }
 
-    public static <T> ApiResult<T> OK(T response) { // todo generic static method
+    public static <T> ApiResult<T> OK(T response) {
         return new ApiResult<>(true, response, null);
     }
 
