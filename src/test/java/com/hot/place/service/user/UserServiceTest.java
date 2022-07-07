@@ -22,17 +22,17 @@ class UserServiceTest {
     @Autowired
     private UserService userService;
 
-    private String email;
+    private Email email;
 
     @BeforeAll
     void setup() {
-        email = "test00@gmail.com";
+        email = new Email("test00@gmail.com");
     }
 
     @Test
     @Order(1)
     void 내정보를_가져온다() {
-        User user  = userService.findByEmail(new Email(email)).orElse(null);
+        User user  = userService.findByEmail(email).orElse(null);
         assertThat(user, is(notNullValue()));
         log.info(user.toString());
     }
