@@ -2,9 +2,13 @@ package com.hot.place.repository.store;
 
 import com.hot.place.model.store.Store;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class JdbcStoreRepository implements StoreRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -12,15 +16,27 @@ public class JdbcStoreRepository implements StoreRepository {
     public JdbcStoreRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+    
+    //todo make store data
 
     @Override
     public Optional<Store> findBySeq(Long seq) {
-        return null;
-//        return jdbcTemplate.query("select * from stores ")
+        List<Store> results = jdbcTemplate.query("select * from stores where seq = ? ", storeRowMapper, seq);
+        return Optional.ofNullable(results.isEmpty() ? null : results.get(0));
     }
 
     @Override
     public Optional<Store> findByNameAndZipCode(String name, String zipCode) {
         return Optional.empty();
     }
+
+    static RowMapper<Store> storeRowMapper = (rs, rowNum) -> new Store.Builder()
+            .seq(rs.getLong("seq"))
+            .name(rs.getString("name"))
+            .zipCode(rs.getString("zip_code"))
+            .address(rs.getString("address"))
+            .lat(rs.getDouble("lat"))
+            .lng(rs.getDouble("lng"))
+            .likes(rs.getInt("likes"))
+            .build();
 }
