@@ -15,3 +15,15 @@ CREATE TABLE users
     CONSTRAINT unq_user_email UNIQUE (email)
 );
 
+CREATE TABLE stores
+(
+    seq                 bigint          NOT NULL AUTO_INCREMENT,
+    name                varchar(50)     NOT NULL,
+    zip_code            varchar(10)     NOT NULL,
+    address             varchar(500)    NOT NULL,
+    lat                 double,
+    lng                 double,
+    likes               int                     DEFAULT 0,
+    PRIMARY KEY (seq),
+    CONSTRAINT unq_stores UNIQUE (name, zip_code)
+);
