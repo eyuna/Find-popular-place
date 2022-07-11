@@ -16,8 +16,6 @@ public class JdbcStoreRepository implements StoreRepository {
     public JdbcStoreRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    
-    //todo make store data
 
     @Override
     public Optional<Store> findBySeq(Long seq) {
@@ -27,7 +25,9 @@ public class JdbcStoreRepository implements StoreRepository {
 
     @Override
     public Optional<Store> findByNameAndZipCode(String name, String zipCode) {
-        return Optional.empty();
+        List<Store> results = jdbcTemplate.query("select * from stores where name = ? and zip_code = ? "
+                , storeRowMapper, name, zipCode);
+        return Optional.ofNullable(results.isEmpty() ? null : results.get(0));
     }
 
     static RowMapper<Store> storeRowMapper = (rs, rowNum) -> new Store.Builder()
