@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 @Service
 public class StoreService {
 
@@ -23,6 +25,8 @@ public class StoreService {
 
     @Transactional(readOnly = true)
     public Optional<Store> findByNameAndZipcode(String name, String zipCode) {
+        checkArgument(zipCode.length() == 5, "zip code length must be 5 characters.");
+
         return storeRepository.findByNameAndZipCode(name, zipCode);
     }
 }
