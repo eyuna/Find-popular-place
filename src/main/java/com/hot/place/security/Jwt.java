@@ -79,8 +79,7 @@ public final class Jwt {
         return jwtVerifier;
     }
 
-
-    // todo 멤버 클래스는 되도록 static 으로 만들라
+    // 중첩 클래스는 되도록 static 으로
     static public class Claims {
         Long userKey;
         String name;
