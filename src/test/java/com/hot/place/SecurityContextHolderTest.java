@@ -49,7 +49,7 @@ class SecurityContextHolderTest {
 
         assertThat(authentication.isAuthenticated(), is(true));
         assertThat(authentication.getName(), is(username));
-        assertThat(authentication.getCredentials().toString(), is(password));
+        assertThat(authentication.getCredentials(), is(password));
         assertThat(authentication.getAuthorities(), containsInAnyOrder(
                 hasProperty("authority", is(USER_ROLE))));
     }
