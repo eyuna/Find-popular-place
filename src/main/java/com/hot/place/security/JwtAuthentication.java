@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import static com.google.common.base.Preconditions.checkArgument;
 
 /**
- * 인증 된 사용자
+ * 인증 된 사용자 (통행증 역할)
  */
 public class JwtAuthentication {
 
