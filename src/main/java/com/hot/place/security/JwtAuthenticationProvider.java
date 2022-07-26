@@ -1,9 +1,19 @@
 package com.hot.place.security;
 
+import com.hot.place.error.NotFoundException;
+import com.hot.place.model.user.Email;
+import com.hot.place.model.user.Role;
+import com.hot.place.model.user.User;
 import com.hot.place.service.user.UserService;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import static org.springframework.security.core.authority.AuthorityUtils.createAuthorityList;
 
 
 /**
@@ -23,16 +33,43 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         this.userService = userService;
     }
 
+    /**
+     * null 이 아닌 값을 반환하면 인증처리 완료
+     * */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken) authentication;
-        return null;
+        return processUserAuthentication(authenticationToken.authenticationRequest());
     }
 
+    private Authentication processUserAuthentication(AuthenticationRequest request) {
+        try {
+            User user = userService.login(new Email(request.getPrincipal()), request.getCredentials());
+
+            JwtAuthenticationToken authenticated =
+                    new JwtAuthenticationToken(
+                            new JwtAuthentication(user.getSeq(), user.getEmail(), user.getName()), null, createAuthorityList(Role.USER.value())
+                    );
+
+            String apiToken = user.newApiToken(jwt, new String[]{Role.USER.value()});
+            authenticated.setDetails(new AuthenticationResult(apiToken, user));
+            return authenticated;
+        } catch (NotFoundException e) {
+            throw new UsernameNotFoundException(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new BadCredentialsException(e.getMessage());
+        } catch (DataAccessException e) {
+            throw new AuthenticationServiceException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 매개 변수로 받은 Authentication 객체의 구현체 클래스가 AuthenticationProvider 객체에서 사용하는 Authentication 객체와 같은 타입인지 확인
+     * AuthenticationProvider 구현체는 인증을 진행할 때 인증 정보를 담은 Authentication 객체를 가지고 인증을 진행하는데
+     * 이 Authentication 객체는 AuthenticationProvider 마다 다르기 때문에 support()를 통해 Authentication 객체에 맞는 AuthenticationProvider 를 찾는다.
+     * */
     @Override
     public boolean supports(Class<?> authentication) {
-        // todo
-        // 같은 타입인지 확인
         return (JwtAuthenticationToken.class.isAssignableFrom(authentication));
     }
 }
