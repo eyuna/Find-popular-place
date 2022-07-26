@@ -26,6 +26,18 @@ public class JdbcUserRepository implements UserRepository {
         return Optional.ofNullable(results.isEmpty() ? null : results.get(0));
     }
 
+    @Override
+    public void update(User user) {
+        jdbcTemplate.update(
+                "UPDATE users SET name=?,passwd=?,login_count=?,last_login_at=? WHERE seq=?",
+                user.getName(),
+                user.getPassword(),
+                user.getLoginCount(),
+                user.getLastLoginAt().orElse(null),
+                user.getSeq()
+        );
+    }
+
     static RowMapper<User> userRowMapper = (rs, rowNum) -> new User.Builder()
             .seq(rs.getLong("seq"))
             .email(new Email(rs.getString("email")))

@@ -6,5 +6,8 @@ import com.hot.place.model.user.User;
 import java.util.Optional;
 
 public interface UserRepository {
+
     Optional<User> findByEmail(Email email);
+
+    void update(User user);
 }

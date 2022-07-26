@@ -1,7 +1,9 @@
 package com.hot.place.model.user;
 
+import com.hot.place.security.Jwt;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -62,9 +64,19 @@ public class User {
         this.createAt = defaultIfNull(createAt, now());
     }
 
+    public void login(PasswordEncoder passwordEncoder, String credentials) {
+        if(!passwordEncoder.matches(credentials, password)) // 평문 패스워드와 암호화된 패스워드가 서로 대칭되는지
+            throw new IllegalArgumentException("Bad credential");
+    }
+
     public void afterLoginSuccess() {
         loginCount++;
         lastLoginAt = now();
+    }
+
+    public String newApiToken(Jwt jwt, String[] roles) {
+        Jwt.Claims claims = Jwt.Claims.of(seq, name, email, roles);
+        return jwt.newToken(claims);
     }
 
     public Long getSeq() {
