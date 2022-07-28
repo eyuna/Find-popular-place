@@ -1,5 +1,6 @@
 package com.hot.place.configure;
 
+import com.hot.place.security.Jwt;
 import com.hot.place.util.MessageUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -14,5 +15,10 @@ public class ServiceConfigure {
         MessageSourceAccessor messageSourceAccessor = new MessageSourceAccessor(messageSource);
         MessageUtils.setMessageSourceAccessor(messageSourceAccessor);
         return messageSourceAccessor;
+    }
+
+    @Bean
+    public Jwt jwt(JwtTokenConfigure jwtTokenConfigure) {
+        return new Jwt(jwtTokenConfigure.getIssuer(), jwtTokenConfigure.getClientSecret(), jwtTokenConfigure.getExpirySeconds());
     }
 }
