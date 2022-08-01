@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -40,6 +41,13 @@ public class UserService {
         user.afterLoginSuccess();
         update(user);
         return user;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Long> findConnectedIds(Long userId) {
+        checkArgument(userId != null, "userId must be provided.");
+
+        return userRepository.findConnectedIds(userId);
     }
 
     private void update(User user) {

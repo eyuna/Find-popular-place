@@ -1,5 +1,7 @@
 package com.hot.place.security;
 
+import com.hot.place.service.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
@@ -8,6 +10,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -21,6 +24,8 @@ public class ConnectionBasedVoter implements AccessDecisionVoter<FilterInvocatio
 
     private final Function<String, Long> idExtractor;
     // 1개의 인자(Type T)를 받고 1개의 객체(Type R)를 리턴하는 함수형 인터페이스
+
+    private UserService userService;
 
     public ConnectionBasedVoter(RequestMatcher requiresAuthorizationRequestMatcher, Function<String, Long> idExtractor) {
         checkArgument(requiresAuthorizationRequestMatcher != null, "requiresAuthorizationRequestMatcher must be provided.");
@@ -46,6 +51,12 @@ public class ConnectionBasedVoter implements AccessDecisionVoter<FilterInvocatio
             return ACCESS_GRANTED;
         }
 
+        // 친구IDs 조회 후 targetId가 포함되는지 확인한다.
+        List<Long> connectedIds = userService.findConnectedIds(jwtAuth.id);
+        if (connectedIds.contains(targetId)) {
+            return ACCESS_GRANTED;
+        }
+
         return ACCESS_DENIED;
     }
 
@@ -68,4 +79,8 @@ public class ConnectionBasedVoter implements AccessDecisionVoter<FilterInvocatio
         return isAssignable(FilterInvocation.class, clazz);
     }
 
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 }

@@ -38,6 +38,15 @@ public class JdbcUserRepository implements UserRepository {
         );
     }
 
+    @Override
+    public List<Long> findConnectedIds(Long userId) {
+        return jdbcTemplate.query(
+                "SELECT target_seq FROM connections WHERE user_seq=? AND granted_at is not null ORDER BY target_seq",
+                (rs, rowNum) -> rs.getLong("target_seq"),
+                userId
+        );
+    }
+
     static RowMapper<User> userRowMapper = (rs, rowNum) -> new User.Builder()
             .seq(rs.getLong("seq"))
             .email(new Email(rs.getString("email")))

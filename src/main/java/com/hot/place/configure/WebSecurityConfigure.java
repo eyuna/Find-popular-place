@@ -2,9 +2,11 @@ package com.hot.place.configure;
 
 import com.hot.place.model.user.Role;
 import com.hot.place.security.*;
+import com.hot.place.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.UnanimousBased;
@@ -20,9 +22,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.apache.commons.lang3.math.NumberUtils.toLong;
 
 @Configuration
 @EnableWebSecurity // SpringSecurityFilterChain 포함
@@ -43,11 +51,6 @@ public class WebSecurityConfigure {
         this.unauthorizedHandler = unauthorizedHandler;
     }
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/swagger-resources", "/webjars/**", "/static/**", "/templates/**", "/v2/**", "/h2/**");
-    }
-
     @Autowired
     public void configureAuthentication(AuthenticationManagerBuilder builder, JwtAuthenticationProvider authenticationProvider) {
         // AuthenticationManager 는 AuthenticationProvider 목록을 지니고 있다.
@@ -56,8 +59,8 @@ public class WebSecurityConfigure {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public JwtAuthenticationProvider jwtAuthenticationProvider(Jwt jwt, UserService userService) {
+        return new JwtAuthenticationProvider(jwt, userService);
     }
 
     @Bean
@@ -65,13 +68,25 @@ public class WebSecurityConfigure {
         return new BCryptPasswordEncoder();
     }
 
-    public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() {
-        return new JwtAuthenticationTokenFilter(jwtTokenConfigure.getHeader(), jwt);
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     public ConnectionBasedVoter connectionBasedVoter() {
-        return null;
+        final String regex = "^/api/user/(\\d+)/post/.*$";
+        final Pattern pattern = Pattern.compile(regex);
+        RequestMatcher requiresAuthorizationRequestMatcher = new RegexRequestMatcher(pattern.pattern(), null);
+        return new ConnectionBasedVoter(
+                requiresAuthorizationRequestMatcher,
+                (String url) -> {
+                    /* url에서 targetId를 추출하기 위해 정규식 처리 */
+                    Matcher matcher = pattern.matcher(url);
+                    long id = matcher.matches() ? toLong(matcher.group(1), -1) : -1;
+                    return id;
+                }
+        );
     }
 
     @Bean
@@ -84,8 +99,28 @@ public class WebSecurityConfigure {
         return new UnanimousBased(decisionVoters);
     }
 
+    public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() {
+        return new JwtAuthenticationTokenFilter(jwtTokenConfigure.getHeader(), jwt);
+    }
+
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return (web) -> web.ignoring().antMatchers("/swagger-resources", "/webjars/**", "/static/**", "/templates/**", "/v2/**", "/h2/**");
+//    }
+
+    @Bean
+    @Order(0)
+    public SecurityFilterChain resources(HttpSecurity http) throws Exception {
+        return http.requestMatchers(matchers -> matchers
+                        .antMatchers("/swagger-resources", "/webjars/**", "/static/**", "/templates/**", "/v2/**", "/h2/**"))
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().permitAll())
+                .build();
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf()
                 .disable()
