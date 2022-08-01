@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
@@ -21,7 +22,6 @@ import static java.util.Collections.singletonList;
 import static springfox.documentation.builders.RequestHandlerSelectors.withMethodAnnotation;
 
 @Configuration
-@EnableSwagger2
 public class Swagger2Configure {
 
     private final JwtTokenConfigure jwtTokenConfigure;
@@ -69,7 +69,7 @@ public class Swagger2Configure {
     private SecurityContext securityContext() {
         return SecurityContext.builder()
                 .securityReferences(securityReference())
-//                .operationSelector(o -> true)
+                .operationSelector(o -> true)
                 .build();
     }
 
