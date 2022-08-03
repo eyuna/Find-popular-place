@@ -1,6 +1,8 @@
 package com.hot.place.security;
 
 import com.hot.place.model.user.User;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -28,9 +30,9 @@ public class AuthenticationResult {
 
     @Override
     public String toString() {
-        return "AuthenticationResult{" +
-                "apiToken='" + apiToken + '\'' +
-                ", user=" + user +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("apiToken", apiToken)
+                .append("user", user)
+                .toString();
     }
 }

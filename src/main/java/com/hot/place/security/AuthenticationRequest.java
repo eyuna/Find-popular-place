@@ -6,6 +6,8 @@ public class AuthenticationRequest {
 
     private String credentials;
 
+    private AuthenticationRequest() {}
+
     public AuthenticationRequest(String principal, String credentials) {
         this.principal = principal;
         this.credentials = credentials;
