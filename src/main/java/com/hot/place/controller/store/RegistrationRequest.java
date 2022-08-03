@@ -13,6 +13,14 @@ public class RegistrationRequest {
     @ApiModelProperty(value = "주소", required = true)
     private String address;
 
+    private RegistrationRequest() {}
+
+    public RegistrationRequest(String name, String zipCode, String address) {
+        this.name = name;
+        this.zipCode = zipCode;
+        this.address = address;
+    }
+
     public String getName() {
         return name;
     }

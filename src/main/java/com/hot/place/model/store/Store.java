@@ -26,11 +26,13 @@ public class Store {
 
     private boolean likesOfMe;
 
-    public Store(String name, String zipCode, String address) {
-        this(null, name, zipCode, address, null, null, 0, false);
+    private Long userSeq; // 등록자
+
+    public Store(String name, String zipCode, String address, Long userSeq) {
+        this(null, name, zipCode, address, null, null, 0, false, userSeq);
     }
 
-    public Store(Long seq, String name, String zipCode, String address, Double lat, Double lng, int likes, boolean likesOfMe) {
+    public Store(Long seq, String name, String zipCode, String address, Double lat, Double lng, int likes, boolean likesOfMe, Long userSeq) {
         checkArgument(isNotEmpty(name), "name must be provided.");
         checkArgument(
                 name.length() >= 1 && name.length() <= 50,
@@ -46,6 +48,7 @@ public class Store {
                 address.length() >= 1 && address.length() <= 500,
                 "address length must be between 1 and 500 characters."
         );
+        checkArgument(userSeq != null, "user_seq must be provided.");
 
         this.seq = seq;
         this.name = name;
@@ -55,6 +58,7 @@ public class Store {
         this.lng = lng;
         this.likes = likes;
         this.likesOfMe = likesOfMe;
+        this.userSeq = userSeq;
     }
 
     public int incrementAndGetLikes() {
@@ -94,6 +98,10 @@ public class Store {
         return likesOfMe;
     }
 
+    public Long getUserSeq() {
+        return userSeq;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -119,6 +127,7 @@ public class Store {
                 .append("lng", lng)
                 .append("likes", likes)
                 .append("likesOfMe", likesOfMe)
+                .append("userSeq", userSeq)
                 .toString();
     }
 
@@ -131,6 +140,7 @@ public class Store {
         private Double lng;
         private int likes;
         private boolean likesOfMe;
+        private Long userSeq;
 
         public Builder() {}
 
@@ -143,6 +153,7 @@ public class Store {
             this.lng = store.lng;
             this.likes = store.likes;
             this.likesOfMe = store.likesOfMe;
+            this.userSeq = store.userSeq;
         }
 
         public Builder seq(Long seq) {
@@ -185,8 +196,13 @@ public class Store {
             return this;
         }
 
+        public Builder userSeq(Long userSeq) {
+            this.userSeq = userSeq;
+            return this;
+        }
+
         public Store build() {
-            return new Store(seq, name, zipCode, address, lat, lng, likes, likesOfMe);
+            return new Store(seq, name, zipCode, address, lat, lng, likes, likesOfMe, userSeq);
         }
     }
 }

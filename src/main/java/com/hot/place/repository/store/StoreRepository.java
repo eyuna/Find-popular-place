@@ -9,4 +9,6 @@ public interface StoreRepository {
     Optional<Store> findBySeq(Long seq);
 
     Optional<Store> findByNameAndZipCode(String name, String zipCode);
+
+    Store insert(Store store);
 }
