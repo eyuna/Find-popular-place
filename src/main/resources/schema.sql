@@ -26,7 +26,8 @@ CREATE TABLE stores
     address             varchar(500)    NOT NULL,
     lat                 double,
     lng                 double,
-    likes               int                     DEFAULT 0,
+    likes               int                         DEFAULT 0,
+    user_seq            bigint          NOT NULL,
     PRIMARY KEY (seq),
     CONSTRAINT unq_stores UNIQUE (name, zip_code)
 );
