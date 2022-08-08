@@ -24,7 +24,7 @@ public class JdbcStoreRepository implements StoreRepository {
     public Store insert(Store store) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(conn -> {
-            PreparedStatement ps = conn.prepareStatement("INSERT INTO users(seq,name,zip_code,address,user_seq) VALUES (null,?,?,?,?,?)", new String[]{"seq"});
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO stores(name,zip_code,address,user_seq) VALUES (?,?,?,?)", new String[]{"seq"});
             ps.setString(1, store.getName());
             ps.setString(2, store.getZipCode());
             ps.setString(3, store.getAddress());
