@@ -28,15 +28,29 @@ class StoreServiceTest {
 
     private String zipCode;
 
+    private String address;
+
+    private Long userSeq;
+
     @BeforeAll
     void setup() {
-        seq = 2L;
-        name = "test store 1";
-        zipCode = "12345";
+//        seq = 2L;
+        name = "test store 13143";
+        zipCode = "42358";
+        address = "test address 2355";
+        userSeq = 1L;
     }
 
     @Test
     @Order(1)
+    void 가게를_등록한다() {
+        Store store = storeService.register(name, zipCode, address, userSeq);
+        assertThat(store, is(notNullValue()));
+        seq = store.getSeq();
+    }
+
+    @Test
+    @Order(2)
     void 시퀀스로_가게정보를_가져온다() {
         Store store = storeService.findBySeq(seq).orElse(null);
         assertThat(store, is(notNullValue()));
@@ -45,7 +59,7 @@ class StoreServiceTest {
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     void 이름_우편번호로_가게정보를_가져온다() {
         // todo 이름 공백
         Store store = storeService.findByNameAndZipcode(name, zipCode).orElse(null);
@@ -54,4 +68,5 @@ class StoreServiceTest {
         assertThat(store.getZipCode(), is(zipCode));
         log.info(store.toString());
     }
+
 }
