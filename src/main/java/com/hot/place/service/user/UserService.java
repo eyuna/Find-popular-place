@@ -26,6 +26,18 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
+    public User join(String name, Email email, String password) {
+        checkArgument(isNotEmpty(password), "password must be provided.");
+        checkArgument(
+                password.length() >= 4 && password.length() <= 15,
+                "password length must be between 4 and 15 characters."
+        );
+
+        User user = new User(email, name, passwordEncoder.encode(password));
+        return insert(user);
+    }
+
     @Transactional(readOnly = true)
     public Optional<User> findByEmail(Email email) {
         checkArgument(email != null, "email must be provided.");
@@ -52,6 +64,10 @@ public class UserService {
 
     private void update(User user) {
         userRepository.update(user);
+    }
+
+    private User insert(User user) {
+        return userRepository.insert(user);
     }
 }
 

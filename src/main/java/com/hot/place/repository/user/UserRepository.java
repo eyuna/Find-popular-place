@@ -12,5 +12,7 @@ public interface UserRepository {
 
     void update(User user);
 
+    User insert(User user);
+
     List<Long> findConnectedIds(Long userId);
 }

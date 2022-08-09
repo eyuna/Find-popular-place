@@ -4,12 +4,16 @@ import com.hot.place.model.user.Email;
 import com.hot.place.model.user.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
 import static com.hot.place.util.DateTimeUtils.dateTimeOf;
+import static com.hot.place.util.DateTimeUtils.timestampOf;
 
 @Repository
 public class JdbcUserRepository implements UserRepository {
@@ -45,6 +49,28 @@ public class JdbcUserRepository implements UserRepository {
                 (rs, rowNum) -> rs.getLong("target_seq"),
                 userId
         );
+    }
+
+    @Override
+    public User insert(User user) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(conn -> {
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO users(name,email,passwd,profile_image_url,login_count,last_login_at,create_at) VALUES (?,?,?,?,?,?,?)", new String[]{"seq"});
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getEmail().getAddress());
+            ps.setString(3, user.getPassword());
+            ps.setString(4, user.getProfileImageUrl().orElse(null));
+            ps.setInt(5, user.getLoginCount());
+            ps.setTimestamp(6, timestampOf(user.getLastLoginAt().orElse(null)));
+            ps.setTimestamp(7, timestampOf(user.getCreateAt()));
+            return ps;
+        }, keyHolder);
+
+        Number key = keyHolder.getKey();
+        long generatedSeq = key != null ? key.longValue() : -1;
+        return new User.Builder(user)
+                .seq(generatedSeq)
+                .build();
     }
 
     static RowMapper<User> userRowMapper = (rs, rowNum) -> new User.Builder()
