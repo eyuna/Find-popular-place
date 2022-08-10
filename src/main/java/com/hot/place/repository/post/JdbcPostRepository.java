@@ -2,12 +2,15 @@ package com.hot.place.repository.post;
 
 import com.hot.place.model.post.Post;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.util.List;
 
+import static com.hot.place.util.DateTimeUtils.dateTimeOf;
 import static com.hot.place.util.DateTimeUtils.timestampOf;
 
 @Repository
@@ -49,4 +52,27 @@ public class JdbcPostRepository implements PostRepository {
                 post.getSeq()
         );
     }
+
+    @Override
+    public List<Post> findAll(Long writerId, Long userId, long offset, int limit) {
+        return jdbcTemplate.query(
+                "SELECT p.*,u.email,u.name," +
+                        "ifnull(select 'true' from likes l where l.post_seq = p.seq and l.user_seq = ?, false) as likes_of_me " +
+                        "FROM posts p JOIN users u ON p.user_seq=u.seq " +
+                        "WHERE p.user_seq = ? ORDER BY p.seq DESC " +
+                        "LIMIT ?,? ",
+                mapper,
+                userId, writerId, offset, limit
+        );
+    }
+
+    static RowMapper<Post> mapper = (rs, rowNum) -> new Post.Builder()
+            .seq(rs.getLong("seq"))
+            .storeId(rs.getLong("store_seq"))
+            .userId(rs.getLong("user_seq"))
+            .contents(rs.getString("contents"))
+            .likes(rs.getInt("like_count"))
+            .likesOfMe(rs.getBoolean("likes_of_me"))
+            .createAt(dateTimeOf(rs.getTimestamp("create_at")))
+            .build();
 }

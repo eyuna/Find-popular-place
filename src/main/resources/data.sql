@@ -12,3 +12,5 @@ INSERT INTO posts(store_seq,user_seq,contents,like_count,comment_count,create_at
 INSERT INTO posts(store_seq,user_seq,contents,like_count,comment_count,create_at) VALUES (1, 2,'test02 post',0,1,'2019-03-20 15:13:20');
 
 INSERT INTO connections(user_seq,target_seq,granted_at,create_at) VALUES (1,2,'2019-03-31 13:00:00','2019-03-31 00:10:00');
+
+INSERT INTO likes(user_seq,post_seq,create_at) VALUES (1,1,'2019-03-01 15:10:00');

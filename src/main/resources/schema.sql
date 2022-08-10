@@ -62,3 +62,15 @@ CREATE TABLE connections
     CONSTRAINT fk_connection_to_user FOREIGN KEY (user_seq) REFERENCES users (seq) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT fk_connection_to_user2 FOREIGN KEY (target_seq) REFERENCES users (seq) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
+
+CREATE TABLE likes
+(
+    seq       bigint   NOT NULL AUTO_INCREMENT,              -- 좋아요 PK
+    user_seq  bigint   NOT NULL,                             -- 사용자 PK
+    post_seq  bigint   NOT NULL,                             -- POST PK (좋아요를 누른 POST)
+    create_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(), -- 생성일시
+    PRIMARY KEY (seq),
+    CONSTRAINT unq_likes_user_post UNIQUE (user_seq, post_seq),
+    CONSTRAINT fk_likes_to_user FOREIGN KEY (user_seq) REFERENCES users (seq) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT fk_likes_to_post FOREIGN KEY (post_seq) REFERENCES posts (seq) ON DELETE CASCADE ON UPDATE CASCADE
+);
