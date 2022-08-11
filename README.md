@@ -10,7 +10,7 @@
 ```
 [POST] api/auth
 ```
-- 사용자 로그인
+- 사용자 로그인 (data.sql 참조)
 - API 토큰 필요 X
 - response
 ```
@@ -65,7 +65,7 @@
 [GET] api/user/{userId}/post/list
 ```
 - 작성 글 조회
-- user id example: 1, 2 ... (data.sql 참고)
+- user id example: 1, 2 ... (data.sql 참조)
 
 
 <br>
