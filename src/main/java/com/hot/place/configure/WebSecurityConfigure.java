@@ -103,20 +103,20 @@ public class WebSecurityConfigure {
         return new JwtAuthenticationTokenFilter(jwtTokenConfigure.getHeader(), jwt);
     }
 
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web) -> web.ignoring().antMatchers("/swagger-resources", "/webjars/**", "/static/**", "/templates/**", "/v2/**", "/h2/**");
-//    }
-
     @Bean
-    @Order(0)
-    public SecurityFilterChain resources(HttpSecurity http) throws Exception {
-        return http.requestMatchers(matchers -> matchers
-                        .antMatchers("/swagger-resources", "/webjars/**", "/static/**", "/templates/**", "/v2/**", "/h2/**"))
-                .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().permitAll())
-                .build();
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().antMatchers("/swagger-resources", "/webjars/**", "/static/**", "/templates/**", "/v2/**", "/h2/**");
     }
+
+//    @Bean
+//    @Order(0)
+//    public SecurityFilterChain resources(HttpSecurity http) throws Exception {
+//        return http.requestMatchers(matchers -> matchers
+//                        .antMatchers("/swagger-resources", "/webjars/**", "/static/**", "/templates/**", "/v2/**", "/h2/**"))
+//                .authorizeHttpRequests(authorize -> authorize
+//                        .anyRequest().permitAll())
+//                .build();
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
