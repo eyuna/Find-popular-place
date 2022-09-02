@@ -36,6 +36,9 @@ dependencies {
 	implementation 'com.fasterxml.jackson.module:jackson-module-afterburner:2.12.5'
 //	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.1'
 
+	implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
+	implementation 'com.amazonaws:aws-java-sdk-s3'
+
 }
 
 tasks.named('test') {
