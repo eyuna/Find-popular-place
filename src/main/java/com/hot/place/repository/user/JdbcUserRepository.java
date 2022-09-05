@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static com.hot.place.util.DateTimeUtils.dateTimeOf;
 import static com.hot.place.util.DateTimeUtils.timestampOf;
+import static java.util.Optional.ofNullable;
 
 @Repository
 public class JdbcUserRepository implements UserRepository {
@@ -33,9 +34,10 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public void update(User user) {
         jdbcTemplate.update(
-                "UPDATE users SET name=?,passwd=?,login_count=?,last_login_at=? WHERE seq=?",
+                "UPDATE users SET name=?,passwd=?,profile_image_url=?,login_count=?,last_login_at=? WHERE seq=?",
                 user.getName(),
                 user.getPassword(),
+                user.getProfileImageUrl().orElse(null),
                 user.getLoginCount(),
                 user.getLastLoginAt().orElse(null),
                 user.getSeq()
@@ -49,6 +51,12 @@ public class JdbcUserRepository implements UserRepository {
                 (rs, rowNum) -> rs.getLong("target_seq"),
                 userId
         );
+    }
+
+    @Override
+    public Optional<User> findById(Long userId) {
+        List<User> results = jdbcTemplate.query("select * from users where seq = ?", userRowMapper, userId);
+        return ofNullable(results.isEmpty() ? null : results.get(0));
     }
 
     @Override

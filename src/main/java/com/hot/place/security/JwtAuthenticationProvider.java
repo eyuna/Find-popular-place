@@ -5,6 +5,8 @@ import com.hot.place.model.user.Email;
 import com.hot.place.model.user.Role;
 import com.hot.place.model.user.User;
 import com.hot.place.service.user.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -13,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import static org.apache.commons.lang3.ClassUtils.isAssignable;
 import static org.springframework.security.core.authority.AuthorityUtils.createAuthorityList;
 
 
@@ -70,6 +73,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
      * */
     @Override
     public boolean supports(Class<?> authentication) {
-        return (JwtAuthenticationToken.class.isAssignableFrom(authentication));
+        return isAssignable(JwtAuthenticationToken.class, authentication);
     }
 }

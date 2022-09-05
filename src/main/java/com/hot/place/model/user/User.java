@@ -79,6 +79,13 @@ public class User {
         return jwt.newToken(claims);
     }
 
+    public void updateProfileImage(String profileImageUrl) {
+        checkArgument(profileImageUrl == null || profileImageUrl.length() <= 255,
+                "profileImageUrl length must be less than 255 characters.");
+
+        this.profileImageUrl = profileImageUrl;
+    }
+
     public Long getSeq() {
         return seq;
     }
@@ -156,6 +163,7 @@ public class User {
             this.email = user.email;
             this.name = user.name;
             this.password = user.password;
+            this.profileImageUrl = user.profileImageUrl;
             this.loginCount = user.loginCount;
             this.lastLoginAt = user.lastLoginAt;
             this.createAt = user.createAt;

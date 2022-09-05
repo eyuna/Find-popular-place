@@ -38,6 +38,15 @@ public class UserService {
         return insert(user);
     }
 
+    @Transactional
+    public User updateProfileImage(Long userId, String profileImageUrl) {
+        User user = findById(userId)
+                .orElseThrow(() -> new NotFoundException(User.class, userId));
+        user.updateProfileImage(profileImageUrl);
+        update(user);
+        return user;
+    }
+
     @Transactional(readOnly = true)
     public Optional<User> findByEmail(Email email) {
         checkArgument(email != null, "email must be provided.");
@@ -53,6 +62,12 @@ public class UserService {
         user.afterLoginSuccess();
         update(user);
         return user;
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<User> findById(Long userId) {
+        checkArgument(userId != null, "userId must be provided.");
+        return userRepository.findById(userId);
     }
 
     @Transactional(readOnly = true)

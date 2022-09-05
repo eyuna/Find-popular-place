@@ -1,5 +1,10 @@
 package com.hot.place.configure;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -7,6 +12,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
+import com.hot.place.aws.S3Client;
 import com.hot.place.security.Jwt;
 import com.hot.place.util.MessageUtils;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
@@ -48,5 +54,24 @@ public class ServiceConfigure {
             builder.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             builder.modulesToInstall(abm, jtm);
         };
+    }
+
+    @Bean
+    public AmazonS3 amazonS3Client(AwsConfigure awsConfigure) {
+        return AmazonS3ClientBuilder.standard()
+                .withRegion(Regions.fromName(awsConfigure.getRegion()))
+                .withCredentials(
+                        new AWSStaticCredentialsProvider(
+                                new BasicAWSCredentials(
+                                        awsConfigure.getAccessKey(),
+                                        awsConfigure.getSecretKey())
+                        )
+                )
+                .build();
+    }
+
+    @Bean
+    public S3Client s3Client(AmazonS3 amazonS3, AwsConfigure awsConfigure) {
+        return new S3Client(amazonS3, awsConfigure.getUrl(), awsConfigure.getBucketName());
     }
 }
