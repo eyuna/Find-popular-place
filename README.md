@@ -36,7 +36,7 @@
 
 #### 2. User
 ```
-[GET] api/user/join
+[POST] api/user/join
 ```
 - 회원가입
 - API 토큰 필요 X
@@ -57,7 +57,7 @@
 #### 3. Post
 
 ```
-[GET] api/post
+[POST] api/post
 ```
 - 글 작성
 
@@ -73,7 +73,7 @@
 #### 4. Store
 
 ```
-[GET] api/store/reg
+[POST] api/store/reg
 ```
 - 가게 등록
 
